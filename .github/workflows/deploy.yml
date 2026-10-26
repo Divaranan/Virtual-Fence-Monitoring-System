@@ -1,0 +1,30 @@
+name: Deploy Flutter Web
+
+on:
+  push:
+    branches:
+      - main  # Ungaloda branch name 'master' na inge 'master' nu maathikonga
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Flutter install panrathu cloud-la
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          cache: true
+
+      # Web Build panna command
+      - name: Build Web
+        run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+
+      # GitHub Pages-ku Deploy panrathu
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
